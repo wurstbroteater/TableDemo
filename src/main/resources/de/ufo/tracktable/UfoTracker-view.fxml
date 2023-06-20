@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane alignment="CENTER" hgap="10.0" vgap="10.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ufo.tracktable.UfoTrackerController">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+    <Label style="-fx-font: NORMAL 20 Tahoma;" text="UFO Sighting Tracker" GridPane.columnIndex="0"
+           GridPane.rowIndex="0">
+    </Label>
+    <TableView fx:id="tableView" prefHeight="350.0" prefWidth="396.0"
+               GridPane.columnIndex="0" GridPane.rowIndex="1">
+        <columnResizePolicy>
+            <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+        <columns>
+            <TableColumn fx:id="uuidCol" editable="false" minWidth="59.0" text="UUID"/>
+            <TableColumn fx:id="tempNameCol" editable="false" minWidth="145.0" text="Temporary Name"/>
+            <TableColumn fx:id="isInRangeCol" editable="false" minWidth="74.0" text="inRange?"/>
+            <TableColumn fx:id="latitudeCol" editable="false" minWidth="30.0" text="Lat"/>
+            <TableColumn fx:id="longitudeCol" editable="false" minWidth="31.0" text="Lon"/>
+            <TableColumn fx:id="altitudeCol" editable="false" minWidth="30.0" text="Alt"/>
+            <TableColumn fx:id="detectorCol" editable="false" minWidth="80.0" text="Detector"/>
+            <TableColumn fx:id="lastUpdateCol" editable="false" minWidth="120.0" text="Last Update"/>
+            <TableColumn fx:id="usdValueCol" editable="false" minWidth="120.0" text="Value in USD"/>
+        </columns>
+    </TableView>
+</GridPane>
