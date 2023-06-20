@@ -3,19 +3,25 @@ package de.ufo.tracktable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.skin.NestedTableColumnHeader;
+import javafx.scene.control.skin.TableColumnHeader;
+import javafx.scene.control.skin.TableHeaderRow;
+import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.input.MouseButton;
 
+import java.util.HashMap;
+import java.util.Map;
 
 public class UfoTrackerController {
     @FXML
     private TableView<UFO> tableView = new TableView<>();
     @FXML
     private TableColumn<UFO, String> uuidCol;
-    private final double UUID_LBL_DEFAULT_MIN_WIDTH = 59.0;
     @FXML
     private TableColumn<UFO, String> tempNameCol;
-    private final double tempName_LBL_DEFAULT_MIN_WIDTH = 145.0;
     private Label tempNameLbl;
     @FXML
     private TableColumn<UFO, Boolean> isInRangeCol;
@@ -39,14 +45,17 @@ public class UfoTrackerController {
     private TableColumn<UFO, Long> usdValueCol;
     private Label usdValueLbl;
     private final ObservableList<UFO> data = FXCollections.observableArrayList(Utils.createDummyData());
+    private final double DEFAULT_SHRINK_SIZE = 50;
+    private final Map<TableColumn<UFO, ?>, Width> columnToWidth = new HashMap<>();
+
+    private record Width(double min, double pref, double max) {
+    }
 
     public void initialize() {
         System.out.println("------------init table------------");
 
         uuidCol.setCellValueFactory(new PropertyValueFactory<>("uuid"));
         tempNameCol.setCellValueFactory(new PropertyValueFactory<>("tempName"));
-        System.out.println(tempNameCol.getGraphic());
-
         isInRangeCol.setCellValueFactory(new PropertyValueFactory<>("isInRange"));
         latitudeCol.setCellValueFactory(new PropertyValueFactory<>("latitude"));
         longitudeCol.setCellValueFactory(new PropertyValueFactory<>("longitude"));
@@ -56,6 +65,61 @@ public class UfoTrackerController {
         usdValueCol.setCellValueFactory(new PropertyValueFactory<>("usdValue"));
 
         tableView.setItems(data);
+        tableView.setTableMenuButtonVisible(true);
+        //prepare custom click listeners for TableColumn
+        tableView.getColumns().forEach(this::createMappingFor);
+        tableView.setOnMouseClicked(e -> setHeaderClickListeners());
+
     }
 
+    private void createMappingFor(final TableColumn<UFO, ?> column) {
+        columnToWidth.put(column, new Width(column.getMinWidth(), column.getPrefWidth(), column.getMaxWidth()));
+    }
+
+    /**
+     * <a href="https://stackoverflow.com/questions/42436119/javafx-tableview-click-on-header">Link to Solution</a>
+     * TODO: Fix bug: The "old" Listener is still active which causes the table to reorder its items on right click
+     */
+    private void setHeaderClickListeners() {
+        // Step 1: Get the table header row.
+        TableHeaderRow headerRow = null;
+        for (Node n : ((TableViewSkin<?>) tableView.getSkin()).getChildren()) {
+            if (n instanceof TableHeaderRow) {
+                headerRow = (TableHeaderRow) n;
+                break;
+            }
+        }
+        if (headerRow == null) {
+            return;
+        }
+
+        // Step 2: Get the list of the header columns.
+        final NestedTableColumnHeader ntch = (NestedTableColumnHeader) headerRow.getChildren().get(1);
+        ObservableList<TableColumnHeader> headers = ntch.getColumnHeaders();
+
+        // Step 3: Add click listener to the header columns.
+        headers.forEach(header -> header.setOnMouseClicked(mouseEvent -> {
+            // Optional:
+            // Get the TableColumnBase (which is the object responsible
+            // for displaying the content of the column.)
+            var column = header.getTableColumn();
+            System.out.println(column);
+
+            // Step 4: Handle double mouse click event.
+            if (mouseEvent.getButton() == MouseButton.SECONDARY) {
+                System.err.printf("%s min=%.2f pref=%.2f max=%.2f", column.getId(), column.getMinWidth(), column.getPrefWidth(), column.getMaxWidth());
+                if (column.getMinWidth() == DEFAULT_SHRINK_SIZE
+                        && column.getPrefWidth() == DEFAULT_SHRINK_SIZE
+                        && column.getMaxWidth() == DEFAULT_SHRINK_SIZE) {
+                    column.setMinWidth(columnToWidth.get(column).min());
+                    column.setPrefWidth(columnToWidth.get(column).pref());
+                    column.setMaxWidth(columnToWidth.get(column).max());
+                } else {
+                    column.setMinWidth(DEFAULT_SHRINK_SIZE);
+                    column.setMaxWidth(DEFAULT_SHRINK_SIZE);
+                    column.setPrefWidth(DEFAULT_SHRINK_SIZE);
+                }
+            }
+        }));
+    }
 }

@@ -7,6 +7,7 @@ import java.util.UUID;
 
 public class Utils {
     private static Random r = new Random(12482375892837945L);
+
     public static List<UFO> createDummyData() {
         return List.of(generateUFO(), generateUFO(), generateUFO(), generateUFO(), generateUFO(), generateUFO(),
                 generateUFO(), generateUFO(), generateUFO(), generateUFO(), generateUFO(), generateUFO(),
@@ -22,13 +23,13 @@ public class Utils {
                 "someWiredHacker133769420YoloSwag"};
 
         return new UFO(UUID.randomUUID().toString(),
-                ufoNames[r.nextInt(ufoNames.length-1) + 1],
+                ufoNames[r.nextInt(ufoNames.length - 1) + 1],
                 r.nextInt(2) == 1,
                 r.nextDouble(91),
                 r.nextDouble(91),
                 r.nextDouble(91),
-                detectors[r.nextInt(detectors.length-1) + 1],
+                detectors[r.nextInt(detectors.length - 1) + 1],
                 LocalDateTime.now().minusHours(4).toString(),
-                Math.abs(r.nextLong())+ 200);
+                Math.abs(r.nextLong()) + 10_000);
     }
 }

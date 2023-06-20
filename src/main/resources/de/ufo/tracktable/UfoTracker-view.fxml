@@ -15,9 +15,16 @@
     <TableView fx:id="tableView" prefHeight="350.0" prefWidth="396.0"
                GridPane.columnIndex="0" GridPane.rowIndex="1">
         <columnResizePolicy>
-            <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY"/>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
         </columnResizePolicy>
         <columns>
+            <!--
+            minWidth values have to be chosen with regard to the length of header label (text) and the possible length of a cell.
+            For example, the length of the header label "USD" is very short compared to the huge long behind it.
+            A minWith of 35.0 would just be enough to display USD, however every value is >= 10000,
+            so it is better to choose a minWidth that fits better to the length of the value instead of the text.
+            In our case, this was 150.0 to show the first 15-16 digits.
+            -->
             <TableColumn fx:id="uuidCol" editable="false" minWidth="59.0" text="UUID"/>
             <TableColumn fx:id="tempNameCol" editable="false" minWidth="145.0" text="Temporary Name"/>
             <TableColumn fx:id="isInRangeCol" editable="false" minWidth="74.0" text="inRange?"/>
@@ -26,7 +33,7 @@
             <TableColumn fx:id="altitudeCol" editable="false" minWidth="30.0" text="Alt"/>
             <TableColumn fx:id="detectorCol" editable="false" minWidth="80.0" text="Detector"/>
             <TableColumn fx:id="lastUpdateCol" editable="false" minWidth="120.0" text="Last Update"/>
-            <TableColumn fx:id="usdValueCol" editable="false" minWidth="120.0" text="Value in USD"/>
+            <TableColumn fx:id="usdValueCol" editable="false" minWidth="150.0" text="USD"/>
         </columns>
     </TableView>
 </GridPane>
