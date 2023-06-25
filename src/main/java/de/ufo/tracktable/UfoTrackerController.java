@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class UfoTrackerController {
     @FXML
-    private TableView<UFO> tableView = new TableView<>();
+    private CustomTableView tableView;
     @FXML
     private TableColumn<UFO, String> uuidCol;
     @FXML
@@ -44,6 +44,10 @@ public class UfoTrackerController {
     @FXML
     private TableColumn<UFO, Long> usdValueCol;
     private Label usdValueLbl;
+    @FXML
+    private Button addBtn;
+    @FXML
+    private Button clearBtn;
     private final ObservableList<UFO> data = FXCollections.observableArrayList(Utils.createDummyData());
     private final double DEFAULT_SHRINK_SIZE = 50;
     private final Map<TableColumn<UFO, ?>, Width> columnToWidth = new HashMap<>();
@@ -51,6 +55,7 @@ public class UfoTrackerController {
     private record Width(double min, double pref, double max) {
     }
 
+    @FXML
     public void initialize() {
         System.out.println("------------init table------------");
 
@@ -63,14 +68,27 @@ public class UfoTrackerController {
         detectorCol.setCellValueFactory(new PropertyValueFactory<>("detector"));
         lastUpdateCol.setCellValueFactory(new PropertyValueFactory<>("lastUpdate"));
         usdValueCol.setCellValueFactory(new PropertyValueFactory<>("usdValue"));
+        addBtn.setOnAction(e -> {
+            if (tableView.getItems().isEmpty()) {
+                tableView.setItems(data);
+            }
+        });
+        clearBtn.setOnAction(e -> {
+            tableView.setItems(FXCollections.observableArrayList());
+        });
 
-        tableView.setItems(data);
+
+
         tableView.setTableMenuButtonVisible(true);
+        tableView.getColumns().forEach(c -> c.getContextMenu().setOnAction(e -> {
+            System.out.println("hee " + e.getSource() + " " + e.getEventType());
+        }));
         //prepare custom click listeners for TableColumn
-        tableView.getColumns().forEach(this::createMappingFor);
-        tableView.setOnMouseClicked(e -> setHeaderClickListeners());
+        //tableView.getColumns().forEach(this::createMappingFor);
+        //tableView.setOnMouseClicked(e -> setHeaderClickListeners());
 
     }
+
 
     private void createMappingFor(final TableColumn<UFO, ?> column) {
         columnToWidth.put(column, new Width(column.getMinWidth(), column.getPrefWidth(), column.getMaxWidth()));
